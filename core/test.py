@@ -1,25 +1,47 @@
-import tkinter as tk
-from tkinter import *
+import tkinter as tk  # 装载tkinter模块,用于Python3
 
-root = tk.Tk()
-root.title("C语言中文网")
-root.geometry('450x180+300+200')
-root.iconbitmap('C:/Users/Administrator/Desktop/C语言中文网logo.ico')
-# 创建一个滚动条控件，默认为垂直方向
-sbar1 = tk.Scrollbar(root)
-# 将滚动条放置在右侧，并设置当窗口大小改变时滚动条会沿着垂直方向延展
-sbar1.pack(side=RIGHT, fill=Y)
-# 创建水平滚动条，默认为水平方向,当拖动窗口时会沿着X轴方向填充
-sbar2 = Scrollbar(root, orient=HORIZONTAL)
-sbar2.pack(side=BOTTOM, fill=X)
-# 创建列表框控件,并添加两个滚动条（分别在垂直和水平方向），使用 set() 进行设置
-mylist = tk.Listbox(root, xscrollcommand=sbar2.set, yscrollcommand=sbar1.set)
-for i in range(30):
-    mylist.insert(END, '第' + str(i + 1) + '次:' + 'C语言中文网，网址为：c.biancheng.net' + '\n')
-# 当窗口改变大小时会在X与Y方向填满窗口
-mylist.pack(side=LEFT, fill=BOTH)
-# 使用 command 关联控件的 yview、xview方法
-sbar1.config(command=mylist.yview)
-sbar2.config(command=mylist.xview)
-#  显示主窗口
-root.mainloop()
+
+from tkinter import ttk  # 装载tkinter.ttk模块,用于Python3
+
+
+root = tk.Tk()  # 创建窗口对象
+
+root.title(string='ttk.Notebook演示')  # 设置窗口标题
+
+root.geometry('400x300+200+200')
+
+tabControl = ttk.Notebook(root)  # 创建Notebook
+
+tab1 = tk.Frame(tabControl, bg='blue')  # 增加新选项卡
+
+tabControl.add(tab1, text='信息窗')  # 把新选项卡增加到Notebook
+
+tab2 = tk.Frame(tabControl, bg='yellow')
+
+tabControl.add(tab2, text='综合信息')
+
+tab3 = tk.Frame(tabControl, bg='green')
+
+tabControl.add(tab3, text='技术分析')
+
+tab4 = tk.Frame(tabControl, bg='blue')
+
+tabControl.add(tab4, text='编写代码')
+
+tab5 = tk.Frame(tabControl, bg='blue')
+
+tabControl.add(tab5, text='模拟回测')
+
+tab6 = ttk.Frame(tabControl)
+
+tabControl.add(tab6, text='双色球')
+
+tab7 = ttk.Frame(tabControl)
+
+tabControl.add(tab7, text='大乐透')
+
+tabControl.pack(expand=1, fill="both")
+
+tabControl.select(tab1)  # 选择tab1
+
+root.mainloop()  # 进入消息循环
