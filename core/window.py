@@ -89,9 +89,10 @@ class BuildFrame:
         self.tab_control.select(tab_flow)
 
     def add(self):
-        mt_thread = MonitorThread(1, "监控线程")
-        mt_thread.setDaemon(True)
-        mt_thread.start()
+        wt_thread = WorkThread(1, "工作线程")
+        wt_thread.wid = 20220315154413
+        wt_thread.setDaemon(True)
+        wt_thread.start()
 
     def save(self):
         self.tab_control.destroy()
