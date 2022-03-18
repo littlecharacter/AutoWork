@@ -3,188 +3,60 @@
     "wid": 20220315154413,
     "flow": [
       {
-        "fid": 1,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          },
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 1
-          },
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 2
-          },
-          {
-            "op_type": 4,
-            "op_content": "enter",
-            "order": 3
-          },
-          {
-            "op_type": 5,
-            "op_content": "f1",
-            "order": 4
-          },
-          {
-            "op_type": 6,
-            "op_content": "99999999",
-            "order": 5
-          }
-        ]
+        "fid": 0,
+        "name": "打开微信",
+        "op_type": 7,
+        "op_content": "/Applications/微信.app",
+        "order": 0
       },
       {
-        "fid": 2,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          },
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 1
-          },
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 2
-          },
-          {
-            "op_type": 4,
-            "op_content": "enter",
-            "order": 3
-          },
-          {
-            "op_type": 5,
-            "op_content": "f1",
-            "order": 4
-          },
-          {
-            "op_type": 6,
-            "op_content": "99999999",
-            "order": 5
-          }
-        ]
+        "fid": 1,
+        "name": "定位搜索框",
+        "op_type": 8,
+        "op_content": "1-sousuolianxiren.png",
+        "order": 1
       },
       {
         "fid": 3,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          },
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 1
-          },
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 2
-          },
-          {
-            "op_type": 4,
-            "op_content": "enter",
-            "order": 3
-          },
-          {
-            "op_type": 5,
-            "op_content": "f1",
-            "order": 4
-          },
-          {
-            "op_type": 6,
-            "op_content": "99999999",
-            "order": 5
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "wid": 20220315154547,
-    "flow": [
-      {
-        "fid": 1,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
+        "name": "左击搜索框",
+        "op_type": 1,
+        "op_content": "0,0",
+        "order": 2
       },
       {
-        "fid": 2,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
+        "fid": 4,
+        "name": "输入搜索内容",
+        "op_type": 6,
+        "op_content": "孙林林",
+        "order": 3
       },
       {
-        "fid": 3,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "wid": 20220315154606,
-    "flow": [
-      {
-        "fid": 1,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
+        "fid": 5,
+        "name": "按回车搜索",
+        "op_type": 4,
+        "op_content": "enter",
+        "order": 4
       },
       {
-        "fid": 2,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
+        "fid": 6,
+        "name": "输入消息内容",
+        "op_type": 6,
+        "op_content": "米修米修【此消息为机器自动发送，请忽略】",
+        "order": 5
       },
       {
-        "fid": 3,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
+        "fid": 7,
+        "name": "按回车发消息",
+        "op_type": 4,
+        "op_content": "enter",
+        "order": 6
+      },
+      {
+        "fid": 8,
+        "name": "最小化对话框",
+        "op_type": 9,
+        "op_content": "command+option+w",
+        "order": 7
       }
     ]
   }

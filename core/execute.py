@@ -1,21 +1,16 @@
-import threading
-import time
-from enum import Enum, unique
-import json
 import os
+import time
+import threading
+from enum import Enum, unique
+from queue import Queue
+from core.orm import *
+
+run_status = Queue(1)
 
 
-FLOW_FILENAME = './db/work_flow.json'
-MONITOR_FILENAME = './db/work_monitor.json'
-
-
-def get_data(wid, filename):
-    with open(filename) as f:
-        data = json.load(f)
-    for d in data:
-        if d.get('wid') == wid:
-            return d
-    return None
+run_work = {}
+run_flow = {}
+run_monitor = {}
 
 
 class WorkThread(threading.Thread):
@@ -27,9 +22,10 @@ class WorkThread(threading.Thread):
 
     # 把要执行的代码写到run函数里面 线程在创建后会直接运行run函数
     def run(self):
+        run_status.put_nowait(1)
         print(os.getcwd())
-        flow_dict = get_data(self.wid, FLOW_FILENAME)
-        monitor_dict = get_data(self.wid, MONITOR_FILENAME)
+        flow_dict = get_special_data(self.wid, FLOW_FILENAME)
+        monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
         while True:
             if flow_dict:
                 print(flow_dict)
@@ -37,34 +33,6 @@ class WorkThread(threading.Thread):
                 print(monitor_dict)
             print(self.wid)
             time.sleep(3)
-
-
-class Work:
-    def __init__(self, wid, flow, monitor):
-        self.wid = wid
-        self.flow: WorkFlow = flow
-        self.monitor: WorkMonitor = monitor
-
-
-class WorkFlow:
-    def __init__(self, fid, suffix, operate):
-        self.fid = fid
-        self.suffix = suffix
-        self.operate: Operate = operate
-
-
-class WorkMonitor:
-    def __init__(self, mid, suffix, operate):
-        self.mid = mid
-        self.suffix = suffix
-        self.operate = operate
-
-
-class Operate:
-    def __init__(self, op_type, op_content, order):
-        self.op_type = op_type
-        self.op_content = op_content
-        self.order = order
 
 
 @unique
@@ -75,6 +43,9 @@ class OperateTypeEnum(Enum):
     KEY_PRESS = 4
     DOUBLE_KEY_PRESS = 5
     INPUT = 6
+    OPEN_APP = 7
+    LOCATE_IMG = 8
+    KEY_MAP = 9
 
 
 def execute(op_type):

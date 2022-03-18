@@ -1,7 +1,8 @@
 import pyautogui
 import tkinter as tk
-from tkinter import ttk
 from tkinter import *
+from tkinter import ttk
+import tkinter.messagebox as mb
 from core.execute import *
 
 
@@ -40,29 +41,56 @@ class MainFrame:
         self.frame_bottom.columnconfigure(0, weight=1)
         self.frame_bottom.rowconfigure(0, weight=1)
         # 2.1TreeView
-        columns = ("name", "operate")
-        headers = ("姓名", "操作")
+        columns = ("name", "status")
+        headers = ("作业", "状态")
         self.tv = ttk.Treeview(self.frame_bottom, show="headings", columns=columns)
         for (column, header) in zip(columns, headers):
             self.tv.column(column, anchor="w")
             self.tv.heading(column, text=header, anchor="w")
         self.tv.grid(row=0, column=0, sticky='nsew')
+        self.tv.bind('<Button-2>', self.show_menu)
         self.refresh()
         self.frame_bottom.grid(row=1, column=0, sticky='nsew')
+        # 2.2右键菜单
+        self.menu = tk.Menu(self.tv, tearoff=False)
+        self.menu.add_command(label="运行", command=self.start_work)
+        self.menu.add_command(label="停止", command=self.stop_work)
+        # menu.add_command(label="修改", command=func)
+        # menu.add_command(label="删除", command=func)
 
     def refresh(self):
-        contacts = [
-            (1, '最后的防守'),
-            (2, '人族无敌'),
-        ]
-        for i, person in enumerate(contacts):
-            self.tv.insert('', i, values=(person[1]), iid=person[0])
+        # 先清空数据
+        x = self.tv.get_children()
+        for item in x:
+            self.tv.delete(item)
+        # 再插入数据
+        work_list = get_all_data(WORK_FILENAME)
+        if work_list:
+            for work_dict in work_list:
+                if work_dict == run_work:
+                    self.tv.insert('', 'end', values=(work_dict.get('name'), "运行"), iid=work_dict.get('wid'))
+                else:
+                    self.tv.insert('', 'end', values=(work_dict.get('name'), "停止"), iid=work_dict.get('wid'))
 
     def add(self):
         self.frame_top.destroy()
         self.frame_bottom.destroy()
         BuildFrame(self.root)
 
+    def show_menu(self, event):
+        item = self.tv.identify_row(event.y)
+        self.tv.selection_set(item)
+        self.menu.post(event.x_root, event.y_root)
+
+    def start_work(self):
+        item = self.tv.selection()
+        if item:
+            print(f"{item} start...")
+
+    def stop_work(self):
+        item = self.tv.selection()
+        if item:
+            print(f"{item} stop...")
 
 class BuildFrame:
     def __init__(self, root):
@@ -89,6 +117,10 @@ class BuildFrame:
         self.tab_control.select(tab_flow)
 
     def add(self):
+        if run_status.full():
+            result = mb.askokcancel("提示", "作业正在运行，请先停止！")
+            print(result)
+            return
         wt_thread = WorkThread(1, "工作线程")
         wt_thread.wid = 20220315154413
         wt_thread.setDaemon(True)
