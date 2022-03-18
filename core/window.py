@@ -31,10 +31,8 @@ class MainFrame:
         self.frame_top = tk.Frame(self.root)
         self.frame_top.columnconfigure(0, weight=1)
         self.frame_top.columnconfigure(1, weight=1)
-        tk.Button(self.frame_top, text='新建', command=self.add, fg='blue', relief=GROOVE).grid(row=0, column=0,
-                                                                                              sticky='nsew')
-        tk.Button(self.frame_top, text='刷新', command=self.refresh, fg='blue', relief=RIDGE).grid(row=0, column=1,
-                                                                                                 sticky='nsew')
+        tk.Button(self.frame_top, text='新建', command=self.add_work, fg='blue', relief=GROOVE).grid(row=0, column=0, sticky='nsew')
+        tk.Button(self.frame_top, text='刷新', command=self.refresh, fg='blue', relief=RIDGE).grid(row=0, column=1, sticky='nsew')
         self.frame_top.grid(row=0, column=0, sticky='nsew')
         # 2.数据区
         self.frame_bottom = tk.Frame(self.root)
@@ -55,6 +53,7 @@ class MainFrame:
         self.menu = tk.Menu(self.tv, tearoff=False)
         self.menu.add_command(label="运行", command=self.start_work)
         self.menu.add_command(label="停止", command=self.stop_work)
+        self.menu.add_command(label="查看", command=self.show_work)
         # menu.add_command(label="修改", command=func)
         # menu.add_command(label="删除", command=func)
 
@@ -72,10 +71,10 @@ class MainFrame:
                 else:
                     self.tv.insert('', 'end', values=(work_dict.get('name'), "停止"), iid=work_dict.get('wid'))
 
-    def add(self):
+    def add_work(self):
         self.frame_top.destroy()
         self.frame_bottom.destroy()
-        BuildFrame(self.root)
+        BuildFrame(self.root, ActionEnum.ADD)
 
     def show_menu(self, event):
         item = self.tv.identify_row(event.y)
@@ -92,31 +91,88 @@ class MainFrame:
         if item:
             print(f"{item} stop...")
 
+    def show_work(self):
+        item = self.tv.selection()
+        self.frame_top.destroy()
+        self.frame_bottom.destroy()
+        BuildFrame(self.root, ActionEnum.SHOW, item[0])
+
+
 class BuildFrame:
-    def __init__(self, root):
+    def __init__(self, root, action, wid=None):
         self.root = root
+        self.action = action
+        self.wid = wid
         self.tab_control = ttk.Notebook(self.root)
         self.tab_control.pack(expand=True, fill=BOTH)
         # 工作流程选项卡
-        tab_flow = tk.Frame(self.tab_control, bg='red')
+        tab_flow = tk.Frame(self.tab_control)
         tab_flow.rowconfigure(0, weight=1)
         tab_flow.columnconfigure(0, weight=1)
-        tab_flow.columnconfigure(1, weight=1)
-        tab_flow.columnconfigure(2, weight=1)
-        columns = ("item", "operate")
-        tv = ttk.Treeview(tab_flow, show="headings", columns=columns)
-        tv.grid(row=0, column=0, columnspan=3, sticky='nsew')
-        tk.Button(tab_flow, text='新增', command=self.add, fg='blue').grid(row=1, column=0, sticky='nsew')
-        tk.Button(tab_flow, text='保存', command=self.save, fg='blue').grid(row=1, column=1, sticky='nsew')
-        tk.Button(tab_flow, text='关闭', command=self.close, fg='blue').grid(row=1, column=2, sticky='nsew')
-        self.tab_control.add(tab_flow, text='工作流程')
+        columns = ("step", "name")
+        headers = ("步骤", "名称")
+        self.tv = ttk.Treeview(tab_flow, show="headings", columns=columns)
+        for (column, header) in zip(columns, headers):
+            self.tv.column(column, anchor="w")
+            self.tv.heading(column, text=header, anchor="w")
+        if self.action == ActionEnum.ADD:
+            tab_flow.columnconfigure(1, weight=1)
+            self.tv.grid(row=0, column=0, columnspan=2, sticky='nsew')
+            tk.Button(tab_flow, text='插入', command=self.insert, fg='blue', state=DISABLED).grid(row=1, column=0, sticky='nsew')
+            tk.Button(tab_flow, text='关闭', command=self.close, fg='blue').grid(row=1, column=1, sticky='nsew')
+        elif self.action == ActionEnum.SHOW or self.action == ActionEnum.MODIFY:
+            self.tv.grid(row=0, column=0, sticky='nsew')
+            tk.Button(tab_flow, text='返回', command=self.close, fg='blue').grid(row=1, column=0, sticky='nsew')
+            if self.action == ActionEnum.MODIFY:
+                # 右键菜单
+                self.menu = tk.Menu(self.tv, tearoff=False)
+                self.menu.add_command(label="查看", command=self.show_flow_item)
+                self.menu.add_command(label="修改", command=self.modify_flow_item)
+                self.menu.add_command(label="删除", command=self.delete_flow_item)
+                self.tv.bind('<Button-2>', self.show_menu)
+            self.show_flow()
+        self.tab_control.add(tab_flow, text='作业流程')
         # 工作监控选项卡
-        tab_monitor = tk.Frame(self.tab_control, bg='blue')
-        self.tab_control.add(tab_monitor, text='工作监控')
-
+        tab_monitor = tk.Frame(self.tab_control)
+        tab_monitor.rowconfigure(0, weight=1)
+        tab_monitor.columnconfigure(0, weight=1)
+        self.tab_control.add(tab_monitor, text='作业监控')
+        tk.Button(tab_monitor, text='关闭', command=self.close, fg='blue').grid(row=0, column=0, sticky='nsew')
         self.tab_control.select(tab_flow)
 
-    def add(self):
+    def show_menu(self, event):
+        item = self.tv.identify_row(event.y)
+        self.tv.selection_set(item)
+        self.menu.post(event.x_root, event.y_root)
+
+    def show_flow(self):
+        print("刷新数据")
+        # 先清空数据
+        x = self.tv.get_children()
+        for item in x:
+            self.tv.delete(item)
+        # 再插入数据
+        flow_dict = get_special_data(self.wid, FLOW_FILENAME)
+        flow_item_list = flow_dict.get('flow')
+        for flow_item_dict in flow_item_list:
+            self.tv.insert('', 'end', values=(f"第{flow_item_dict.get('fid') + 1}步", flow_item_dict.get('name')), iid=flow_item_dict.get('fid'))
+
+    def show_flow_item(self):
+        item = self.tv.selection()
+        if item:
+            print(f"{item} show...")
+
+    def modify_flow_item(self):
+        item = self.tv.selection()
+        if item:
+            print(f"{item} modify...")
+
+    def delete_flow_item(self):
+        item = self.tv.selection()
+        if item:
+            print(f"{item} delete...")
+
+    def insert(self):
         if run_status.full():
             result = mb.askokcancel("提示", "作业正在运行，请先停止！")
             print(result)
@@ -126,10 +182,13 @@ class BuildFrame:
         wt_thread.setDaemon(True)
         wt_thread.start()
 
-    def save(self):
-        self.tab_control.destroy()
-        MainFrame(self.root)
-
     def close(self):
         self.tab_control.destroy()
         MainFrame(self.root)
+
+
+@unique
+class ActionEnum(Enum):
+    ADD = 1
+    MODIFY = 2
+    SHOW = 3

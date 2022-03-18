@@ -16,7 +16,7 @@ def get_special_data(wid, filename):
     with open(filename) as f:
         data = json.load(f)
     for d in data:
-        if d.get('wid') == wid:
+        if d.get('wid') == int(wid):
             return d
     return None
 
