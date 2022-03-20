@@ -15,6 +15,8 @@ class Window:
                            f"x{int(pyautogui.size()[1] / 3)}"
                            f"+{int(pyautogui.size()[0] / 2) - int(pyautogui.size()[0] / 6)}"
                            f"+{int(pyautogui.size()[1] / 2) - int(pyautogui.size()[1] / 6)}")
+        s = ttk.Style()
+        s.configure('Treeview', rowheight=30)
         MainFrame(self.root)
 
     def run(self):
