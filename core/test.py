@@ -5,6 +5,7 @@ import pyautogui
 import pyperclip
 import pyscreeze
 import platform
+import time
 
 pyautogui.FAILSAFE = False
 
@@ -63,8 +64,10 @@ def locate_img(wid, op_content):
 
 
 if __name__ == "__main__":
-    op_content = "D:\\App\\Tencent\\WeChat\\WeChat.exe"
-    subprocess.Popen(op_content)
+    op_content = "D:\\App\\Game\\War3TrainerV13\\War3Trainer.exe"
+    p = subprocess.Popen(op_content)
+    time.sleep(3)
+    p.terminate()
     # os.system(f'open \"{op_content}\"')
     # os.system("osascript -e 'tell application \"/Applications/微信.app\" to quit'")
     # subprocess.Popen("/Applications/微信.app")

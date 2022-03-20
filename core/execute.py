@@ -54,7 +54,7 @@ class WorkThread(threading.Thread):
                 if monitor_item_list:
                     for monitor_item in monitor_item_list:
                         execute(self, monitor_item['op_type'], monitor_item['op_content'])
-                time.sleep(3)
+                time.sleep(2)
         except:
             pass
 
@@ -74,6 +74,7 @@ class OperateTypeEnum(Enum):
 
 
 def execute(self, op_type, op_content):
+    print(op_content)
     if op_type == OperateTypeEnum.LEFT_CLICK.value:
         position = op_content.split(",")
         x, y = pyautogui.position()
@@ -114,8 +115,7 @@ def execute(self, op_type, op_content):
             os.system(f'open \"{op_content}\"')
         return True
     elif op_type == OperateTypeEnum.LOCATE_IMG.value:
-        locate_img(self.wid, op_content)
-        return True
+        return locate_img(self.wid, op_content)
     elif op_type == OperateTypeEnum.KEY_MAP.value:
         keys = op_content.split("+")
         for key in keys[0:-1]:
@@ -135,7 +135,7 @@ def locate_img(wid, op_content):
     # 屏幕缩放系数 mac缩放是2 windows一般是1
     screenScale = pyautogui.screenshot().size[0] / pyautogui.size()[0]
     # print(pyautogui.size())
-    print(f"屏幕缩放系数：{screenScale}")
+    # print(f"屏幕缩放系数：{screenScale}")
 
     # 事先读取按钮截图
     img_path = f"./img/{wid}/{op_content}"
@@ -155,7 +155,7 @@ def locate_img(wid, op_content):
     matchResult = cv2.matchTemplate(source, target, cv2.TM_CCOEFF_NORMED)
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(matchResult)
     # print(f"minVal:{minVal},maxVal:{maxVal},minLoc:{minLoc},maxLoc:{maxLoc}")
-    if maxVal >= 0.9:
+    if maxVal >= 0.8:
         # 计算出中心点(因为截图就是原图，所以这里要缩放)
         tagHalfW = int(targetWidth / screenScale / 2)
         tagHalfH = int(targetHeight / screenScale / 2)
@@ -163,4 +163,9 @@ def locate_img(wid, op_content):
         tagCenterY = maxLoc[1] / screenScale + tagHalfH
         # 左键点击屏幕上的这个位置
         print(f"tagCenterX:{tagCenterX},tagCenterY:{tagCenterY}")
-        pyautogui.click(tagCenterX, tagCenterY, button='left')
+        pyautogui.moveTo(x=tagCenterX, y=tagCenterY, duration=0.25)
+        pyautogui.click()
+        # pyautogui.click(tagCenterX, tagCenterY, button='left')
+        return True
+    print(f"没有匹配到{op_content}")
+    return False
