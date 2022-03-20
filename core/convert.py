@@ -20,5 +20,6 @@ def yin_jie(word):
 
 
 if __name__ == "__main__":
+    print(datetime.datetime.now())
     print(pin_yin("最后的防守"))
     print(yin_jie("诗书继世长"))

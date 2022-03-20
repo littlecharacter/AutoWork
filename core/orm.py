@@ -38,10 +38,9 @@ class WorkFlow:
 
 
 class WorkMonitor:
-    def __init__(self, mid, name, order):
+    def __init__(self, mid, name):
         self.mid = mid
         self.name = name
-        self.order = order
         self.operate: Operate
 
 

@@ -1,4 +1,4 @@
-import pyautogui
+import datetime
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -66,7 +66,7 @@ class MainFrame:
         work_list = get_all_data(WORK_FILENAME)
         if work_list:
             for work_dict in work_list:
-                if work_dict == run_work:
+                if run_flag.full() and work_dict.get('wid') == run_work.get('wid'):
                     self.tv.insert('', 'end', values=(work_dict.get('name'), "运行"), iid=work_dict.get('wid'))
                 else:
                     self.tv.insert('', 'end', values=(work_dict.get('name'), "停止"), iid=work_dict.get('wid'))
@@ -82,14 +82,25 @@ class MainFrame:
         self.menu.post(event.x_root, event.y_root)
 
     def start_work(self):
+        if run_flag.full():
+            mb.askokcancel("提示", "作业正在运行，请先停止！")
+            return
         item = self.tv.selection()
         if item:
-            print(f"{item} start...")
+            wt_thread = WorkThread(int(datetime.datetime.now().strftime('%Y%m%d%H%M%S')), "工作线程")
+            wt_thread.wid = int(item[0])
+            wt_thread.setDaemon(True)
+            wt_thread.start()
+            self.refresh()
 
     def stop_work(self):
         item = self.tv.selection()
-        if item:
-            print(f"{item} stop...")
+        if run_flag.full() and int(item[0]) == run_work.get('wid'):
+            stop_signal.put_nowait(1)
+            time.sleep(1)
+            self.refresh()
+        else:
+            mb.askokcancel("提示", "该任务未运行，无需停止！")
 
     def show_work(self):
         item = self.tv.selection()
@@ -109,78 +120,127 @@ class BuildFrame:
         tab_flow = tk.Frame(self.tab_control)
         tab_flow.rowconfigure(0, weight=1)
         tab_flow.columnconfigure(0, weight=1)
-        columns = ("step", "name")
-        headers = ("步骤", "名称")
-        self.tv = ttk.Treeview(tab_flow, show="headings", columns=columns)
-        for (column, header) in zip(columns, headers):
-            self.tv.column(column, anchor="w")
-            self.tv.heading(column, text=header, anchor="w")
+        flow_columns = ("step", "name")
+        flow_headers = ("步骤", "名称")
+        self.flow_tv = ttk.Treeview(tab_flow, show="headings", columns=flow_columns)
+        for (column, header) in zip(flow_columns, flow_headers):
+            self.flow_tv.column(column, anchor="w")
+            self.flow_tv.heading(column, text=header, anchor="w")
         if self.action == ActionEnum.ADD:
             tab_flow.columnconfigure(1, weight=1)
-            self.tv.grid(row=0, column=0, columnspan=2, sticky='nsew')
-            tk.Button(tab_flow, text='插入', command=self.insert, fg='blue', state=DISABLED).grid(row=1, column=0, sticky='nsew')
+            self.flow_tv.grid(row=0, column=0, columnspan=2, sticky='nsew')
+            tk.Button(tab_flow, text='插入', command=self.insert_flow, fg='blue', state=DISABLED).grid(row=1, column=0, sticky='nsew')
             tk.Button(tab_flow, text='关闭', command=self.close, fg='blue').grid(row=1, column=1, sticky='nsew')
         elif self.action == ActionEnum.SHOW or self.action == ActionEnum.MODIFY:
-            self.tv.grid(row=0, column=0, sticky='nsew')
+            self.flow_tv.grid(row=0, column=0, sticky='nsew')
             tk.Button(tab_flow, text='返回', command=self.close, fg='blue').grid(row=1, column=0, sticky='nsew')
             if self.action == ActionEnum.MODIFY:
                 # 右键菜单
-                self.menu = tk.Menu(self.tv, tearoff=False)
-                self.menu.add_command(label="查看", command=self.show_flow_item)
-                self.menu.add_command(label="修改", command=self.modify_flow_item)
-                self.menu.add_command(label="删除", command=self.delete_flow_item)
-                self.tv.bind('<Button-2>', self.show_menu)
+                self.flow_menu = tk.Menu(self.flow_tv, tearoff=False)
+                self.flow_menu.add_command(label="查看", command=self.show_flow_item)
+                self.flow_menu.add_command(label="修改", command=self.modify_flow_item)
+                self.flow_menu.add_command(label="删除", command=self.delete_flow_item)
+                self.flow_tv.bind('<Button-2>', self.show_flow_menu)
             self.show_flow()
         self.tab_control.add(tab_flow, text='作业流程')
         # 工作监控选项卡
         tab_monitor = tk.Frame(self.tab_control)
         tab_monitor.rowconfigure(0, weight=1)
         tab_monitor.columnconfigure(0, weight=1)
+        monitor_columns = ("name",)
+        monitor_headers = ("监控项",)
+        self.monitor_tv = ttk.Treeview(tab_monitor, show="headings", columns=monitor_columns)
+        for (column, header) in zip(monitor_columns, monitor_headers):
+            self.monitor_tv.column(column, anchor="w")
+            self.monitor_tv.heading(column, text=header, anchor="w")
+        if self.action == ActionEnum.ADD:
+            tab_monitor.columnconfigure(1, weight=1)
+            self.monitor_tv.grid(row=0, column=0, columnspan=2, sticky='nsew')
+            tk.Button(tab_monitor, text='插入', command=self.insert_monitor, fg='blue', state=DISABLED).grid(row=1, column=0, sticky='nsew')
+            tk.Button(tab_monitor, text='关闭', command=self.close, fg='blue').grid(row=1, column=1, sticky='nsew')
+        elif self.action == ActionEnum.SHOW or self.action == ActionEnum.MODIFY:
+            self.monitor_tv.grid(row=0, column=0, sticky='nsew')
+            tk.Button(tab_monitor, text='返回', command=self.close, fg='blue').grid(row=1, column=0, sticky='nsew')
+            if self.action == ActionEnum.MODIFY:
+                # 右键菜单
+                self.monitor_menu = tk.Menu(self.monitor_tv, tearoff=False)
+                self.monitor_menu.add_command(label="查看", command=self.show_monitor_item)
+                self.monitor_menu.add_command(label="修改", command=self.modify_monitor_item)
+                self.monitor_menu.add_command(label="删除", command=self.delete_monitor_item)
+                self.monitor_tv.bind('<Button-2>', self.show_monitor_menu)
+            self.show_monitor()
         self.tab_control.add(tab_monitor, text='作业监控')
-        tk.Button(tab_monitor, text='关闭', command=self.close, fg='blue').grid(row=0, column=0, sticky='nsew')
         self.tab_control.select(tab_flow)
 
-    def show_menu(self, event):
-        item = self.tv.identify_row(event.y)
-        self.tv.selection_set(item)
-        self.menu.post(event.x_root, event.y_root)
+    def show_flow_menu(self, event):
+        item = self.flow_tv.identify_row(event.y)
+        self.flow_tv.selection_set(item)
+        self.flow_menu.post(event.x_root, event.y_root)
+
+    def show_monitor_menu(self, event):
+        item = self.monitor_tv.identify_row(event.y)
+        self.monitor_tv.selection_set(item)
+        self.monitor_menu.post(event.x_root, event.y_root)
 
     def show_flow(self):
-        print("刷新数据")
         # 先清空数据
-        x = self.tv.get_children()
+        x = self.flow_tv.get_children()
         for item in x:
-            self.tv.delete(item)
+            self.flow_tv.delete(item)
         # 再插入数据
         flow_dict = get_special_data(self.wid, FLOW_FILENAME)
-        flow_item_list = flow_dict.get('flow')
-        for flow_item_dict in flow_item_list:
-            self.tv.insert('', 'end', values=(f"第{flow_item_dict.get('fid') + 1}步", flow_item_dict.get('name')), iid=flow_item_dict.get('fid'))
+        if flow_dict:
+            flow_item_list = flow_dict.get('flow')
+            for flow_item_dict in flow_item_list:
+                self.flow_tv.insert('', 'end', values=(f"第{flow_item_dict.get('fid') + 1}步", flow_item_dict.get('name')), iid=flow_item_dict.get('fid'))
+
+    def show_monitor(self):
+        # 先清空数据
+        x = self.monitor_tv.get_children()
+        for item in x:
+            self.monitor_tv.delete(item)
+        # 再插入数据
+        monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
+        if monitor_dict:
+            monitor_item_list = monitor_dict.get('monitor')
+            for monitor_item_dict in monitor_item_list:
+                self.monitor_tv.insert('', 'end', values=(monitor_item_dict.get('name')), iid=monitor_item_dict.get('mid'))
 
     def show_flow_item(self):
-        item = self.tv.selection()
+        item = self.flow_tv.selection()
+        if item:
+            print(f"{item} show...")
+
+    def show_monitor_item(self):
+        item = self.monitor_tv.selection()
         if item:
             print(f"{item} show...")
 
     def modify_flow_item(self):
-        item = self.tv.selection()
+        item = self.flow_tv.selection()
+        if item:
+            print(f"{item} modify...")
+
+    def modify_monitor_item(self):
+        item = self.monitor_tv.selection()
         if item:
             print(f"{item} modify...")
 
     def delete_flow_item(self):
-        item = self.tv.selection()
+        item = self.flow_tv.selection()
         if item:
             print(f"{item} delete...")
 
-    def insert(self):
-        if run_status.full():
-            result = mb.askokcancel("提示", "作业正在运行，请先停止！")
-            print(result)
-            return
-        wt_thread = WorkThread(1, "工作线程")
-        wt_thread.wid = 20220315154413
-        wt_thread.setDaemon(True)
-        wt_thread.start()
+    def delete_monitor_item(self):
+        item = self.monitor_tv.selection()
+        if item:
+            print(f"{item} delete...")
+
+    def insert_flow(self):
+        pass
+
+    def insert_monitor(self):
+        pass
 
     def close(self):
         self.tab_control.destroy()

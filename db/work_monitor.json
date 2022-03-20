@@ -1,67 +1,24 @@
 [
   {
-    "wid": 19700101000000,
+    "wid": 20220101000000,
     "monitor": [
       {
+        "mid": 0,
+        "name": "开始游戏",
+        "op_type": 8,
+        "op_content": "kaishiyouxi.png"
+      },
+      {
         "mid": 1,
-        "name": 1,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          },
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 1
-          },
-          {
-            "op_type": 3,
-            "op_content": "0,200",
-            "order": 2
-          },
-          {
-            "op_type": 4,
-            "op_content": "enter",
-            "order": 3
-          },
-          {
-            "op_type": 5,
-            "op_content": "f1",
-            "order": 4
-          },
-          {
-            "op_type": 6,
-            "op_content": "99999999",
-            "order": 5
-          }
-        ]
+        "name": "退出游戏",
+        "op_type": 8,
+        "op_content": "tuichuzhanyi.png"
       },
       {
         "mid": 2,
-        "name": 2,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 1,
-            "op_content": "0,200",
-            "order": 0
-          }
-        ]
-      },
-      {
-        "mid": 3,
-        "name": 3,
-        "suffix": "png",
-        "operate": [
-          {
-            "op_type": 2,
-            "op_content": "0,200",
-            "order": 1
-          }
-        ]
+        "name": "退出确定",
+        "op_type": 8,
+        "op_content": "tuichuqueding.png"
       }
     ]
   }
