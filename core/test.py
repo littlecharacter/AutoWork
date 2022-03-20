@@ -4,6 +4,7 @@ import cv2
 import pyautogui
 import pyperclip
 import pyscreeze
+import platform
 
 pyautogui.FAILSAFE = False
 
@@ -67,6 +68,7 @@ if __name__ == "__main__":
     # os.system("osascript -e 'tell application \"/Applications/微信.app\" to quit'")
     # subprocess.Popen("/Applications/微信.app")
     # test_sort()
-    test_mouse()
+    # test_mouse()
     # locate_img(20220315154413, "1-sousuolianxiren.png")
+    print(platform.system().lower())
     pass

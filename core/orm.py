@@ -7,13 +7,13 @@ MONITOR_FILENAME = './db/work_monitor.json'
 
 
 def get_all_data(filename):
-    with open(filename) as f:
+    with open(filename, encoding="utf-8") as f:
         data = json.load(f)
     return data
 
 
 def get_special_data(wid, filename):
-    with open(filename) as f:
+    with open(filename, encoding="utf-8") as f:
         data = json.load(f)
     for d in data:
         if d.get('wid') == int(wid):
