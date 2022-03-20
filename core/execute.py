@@ -54,7 +54,7 @@ class WorkThread(threading.Thread):
                 if monitor_item_list:
                     for monitor_item in monitor_item_list:
                         execute(self, monitor_item['op_type'], monitor_item['op_content'])
-                time.sleep(2)
+                time.sleep(1)
         except:
             pass
 
