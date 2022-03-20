@@ -63,7 +63,8 @@ def locate_img(wid, op_content):
 
 
 if __name__ == "__main__":
-    # op_content = "/Applications/微信.app"
+    op_content = "D:\\App\\Tencent\\WeChat\\WeChat.exe"
+    subprocess.Popen(op_content)
     # os.system(f'open \"{op_content}\"')
     # os.system("osascript -e 'tell application \"/Applications/微信.app\" to quit'")
     # subprocess.Popen("/Applications/微信.app")

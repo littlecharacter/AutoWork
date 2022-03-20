@@ -9,6 +9,8 @@ import cv2
 import pyautogui
 import pyperclip
 import pyscreeze
+import subprocess
+import platform
 
 import random
 
@@ -109,7 +111,10 @@ def execute(self, op_type, op_content):
         pyautogui.hotkey('command', 'v')
         return True
     elif op_type == OperateTypeEnum.OPEN_APP.value:
-        os.system(f'open \"{op_content}\"')
+        if platform.system().lower() == 'windows':
+            subprocess.Popen(op_content)
+        else:
+            os.system(f'open \"{op_content}\"')
         return True
     elif op_type == OperateTypeEnum.LOCATE_IMG.value:
         locate_img(self.wid, op_content)
