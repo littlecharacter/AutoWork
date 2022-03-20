@@ -50,7 +50,10 @@ class MainFrame:
             self.tv.column(column, anchor="w")
             self.tv.heading(column, text=header, anchor="w")
         self.tv.grid(row=0, column=0, sticky='nsew')
-        self.tv.bind('<Button-2>', self.show_menu)
+        if platform.system().lower() == 'windows':
+            self.tv.bind('<Button-3>', self.show_menu)
+        else:
+            self.tv.bind('<Button-2>', self.show_menu)
         self.refresh()
         self.frame_bottom.grid(row=1, column=0, sticky='nsew')
         # 2.2右键菜单
@@ -94,6 +97,8 @@ class MainFrame:
             wt_thread = WorkThread(int(datetime.datetime.now().strftime('%Y%m%d%H%M%S')), "工作线程")
             wt_thread.wid = int(item[0])
             wt_thread.setDaemon(True)
+            if stop_signal.full():
+                stop_signal.get_nowait()
             wt_thread.start()
             self.refresh()
 
@@ -101,7 +106,8 @@ class MainFrame:
         item = self.tv.selection()
         if run_flag.full() and int(item[0]) == run_work.get('wid'):
             stop_signal.put_nowait(1)
-            time.sleep(1)
+            run_flag.get_nowait()
+            del run_work['wid']
             self.refresh()
         else:
             mb.askokcancel("提示", "该任务未运行，无需停止！")
@@ -144,7 +150,10 @@ class BuildFrame:
                 self.flow_menu.add_command(label="查看", command=self.show_flow_item)
                 self.flow_menu.add_command(label="修改", command=self.modify_flow_item)
                 self.flow_menu.add_command(label="删除", command=self.delete_flow_item)
-                self.flow_tv.bind('<Button-2>', self.show_flow_menu)
+                if platform.system().lower() == 'windows':
+                    self.flow_tv.bind('<Button-3>', self.show_flow_menu)
+                else:
+                    self.flow_tv.bind('<Button-2>', self.show_flow_menu)
             self.show_flow()
         self.tab_control.add(tab_flow, text='作业流程')
         # 工作监控选项卡
@@ -171,7 +180,10 @@ class BuildFrame:
                 self.monitor_menu.add_command(label="查看", command=self.show_monitor_item)
                 self.monitor_menu.add_command(label="修改", command=self.modify_monitor_item)
                 self.monitor_menu.add_command(label="删除", command=self.delete_monitor_item)
-                self.monitor_tv.bind('<Button-2>', self.show_monitor_menu)
+                if platform.system().lower() == 'windows':
+                    self.monitor_tv.bind('<Button-3>', self.show_monitor_menu)
+                else:
+                    self.monitor_tv.bind('<Button-2>', self.show_monitor_menu)
             self.show_monitor()
         self.tab_control.add(tab_monitor, text='作业监控')
         self.tab_control.select(tab_flow)

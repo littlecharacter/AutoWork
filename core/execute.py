@@ -30,38 +30,33 @@ class WorkThread(threading.Thread):
 
     # 把要执行的代码写到run函数里面 线程在创建后会直接运行run函数
     def run(self):
-        run_flag.put_nowait(self)
-        global run_work
-        run_work['wid'] = self.wid
-        flow_dict = get_special_data(self.wid, FLOW_FILENAME)
-        flow_dict['flow'] = sorted(flow_dict['flow'], key=lambda x: x['order'])
-        flow_item_list = copy.deepcopy(flow_dict['flow'])
-        monitor_item_list = []
-        monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
-        if monitor_dict:
-            monitor_item_list = monitor_dict['monitor']
-        while True:
-            if stop_signal.full():
-                del run_work['wid']
-                break
-            # 执行流程
-            if not flow_item_list:
-                time.sleep(60)
-
-                i = random.randint(1, 15)
-                print(f"{time.time()}：{i}")
-                if not i == 1:
-                    pyautogui.moveTo(x=i, y=i, duration=0.25)
-                    continue
-
-                flow_item_list = copy.deepcopy(flow_dict['flow'])
-            flow_item = flow_item_list[0]
-            if execute(self, flow_item['op_type'], flow_item['op_content']):
-                flow_item_list.remove(flow_item)
-            # 执行监控
-            if monitor_item_list:
-                for monitor_item in monitor_item_list:
-                    execute(self, monitor_item['op_type'], monitor_item['op_content'])
+        try:
+            run_flag.put_nowait(self)
+            global run_work
+            run_work['wid'] = self.wid
+            flow_dict = get_special_data(self.wid, FLOW_FILENAME)
+            flow_dict['flow'] = sorted(flow_dict['flow'], key=lambda x: x['order'])
+            flow_item_list = copy.deepcopy(flow_dict['flow'])
+            monitor_item_list = []
+            monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
+            if monitor_dict:
+                monitor_item_list = monitor_dict['monitor']
+            while True:
+                if stop_signal.full():
+                    break
+                # 执行流程
+                if not flow_item_list:
+                    flow_item_list = copy.deepcopy(flow_dict['flow'])
+                flow_item = flow_item_list[0]
+                if execute(self, flow_item['op_type'], flow_item['op_content']):
+                    flow_item_list.remove(flow_item)
+                # 执行监控
+                if monitor_item_list:
+                    for monitor_item in monitor_item_list:
+                        execute(self, monitor_item['op_type'], monitor_item['op_content'])
+                time.sleep(3)
+        except:
+            pass
 
 
 @unique
@@ -107,8 +102,10 @@ def execute(self, op_type, op_content):
     elif op_type == OperateTypeEnum.INPUT.value:
         pyperclip.copy(op_content)
         time.sleep(0.5)
-        pyautogui.hotkey('ctrl', 'v')
-        pyautogui.hotkey('command', 'v')
+        if platform.system().lower() == 'windows':
+            pyautogui.hotkey('ctrl', 'v')
+        else:
+            pyautogui.hotkey('command', 'v')
         return True
     elif op_type == OperateTypeEnum.OPEN_APP.value:
         if platform.system().lower() == 'windows':
