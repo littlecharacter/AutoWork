@@ -51,28 +51,28 @@ def locate_img(wid, op_content):
         matchResult = cv2.matchTemplate(source, target, cv2.TM_CCOEFF_NORMED)
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(matchResult)
         # print(f"minVal:{minVal},maxVal:{maxVal},minLoc:{minLoc},maxLoc:{maxLoc}")
-        if maxVal >= 0.9:
+        if maxVal >= 0.8:
             # 计算出中心点(因为截图就是原图，所以这里要缩放)
             tagHalfW = int(targetWidth / screenScale / 2)
             tagHalfH = int(targetHeight / screenScale / 2)
             tagCenterX = maxLoc[0] / screenScale + tagHalfW
             tagCenterY = maxLoc[1] / screenScale + tagHalfH
             # 左键点击屏幕上的这个位置
-            print(f"tagCenterX:{tagCenterX},tagCenterY:{tagCenterY}")
-            pyautogui.click(tagCenterX, tagCenterY, button='left')
+            pyautogui.moveTo(x=tagCenterX, y=tagCenterY, duration=0.25)
+            pyautogui.click()
             break
 
 
 if __name__ == "__main__":
-    op_content = "D:\\App\\Game\\War3TrainerV13\\War3Trainer.exe"
-    p = subprocess.Popen(op_content)
-    time.sleep(3)
-    p.terminate()
+    # op_content = "D:\\App\\Game\\War3TrainerV13\\War3Trainer.exe"
+    # p = subprocess.Popen(op_content)
+    # time.sleep(3)
+    # p.terminate()
     # os.system(f'open \"{op_content}\"')
     # os.system("osascript -e 'tell application \"/Applications/微信.app\" to quit'")
     # subprocess.Popen("/Applications/微信.app")
     # test_sort()
     # test_mouse()
-    # locate_img(20220315154413, "1-sousuolianxiren.png")
-    print(platform.system().lower())
+    locate_img(20220321000000, "zhongzhi.png")
+    # print(platform.system().lower())
     pass
