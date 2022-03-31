@@ -68,7 +68,7 @@ def test_delete_record():
 if __name__ == "__main__":
     pass
     test_create_database()
-    test_insert_record()
-    test_select_record()
-    test_update_record()
-    test_delete_record()
+    # test_insert_record()
+    # test_select_record()
+    # test_update_record()
+    # test_delete_record()
