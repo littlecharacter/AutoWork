@@ -1,20 +1,9 @@
-import os
-import subprocess
 import cv2
 import pyautogui
-import pyperclip
 import pyscreeze
-import platform
-import time
+
 
 pyautogui.FAILSAFE = False
-
-
-def test_sort():
-    source = [{'name': 'Homer', 'age': 39}, {'name': 'Bart', 'age': 10}]
-    print(source)
-    source = sorted(source, key=lambda x: x['name'])
-    print(source)
 
 
 def test_mouse():
@@ -61,18 +50,12 @@ def locate_img(wid, op_content):
             pyautogui.moveTo(x=tagCenterX, y=tagCenterY, duration=0.25)
             pyautogui.click()
             break
+        else:
+            print("没有匹配到")
 
 
 if __name__ == "__main__":
-    # op_content = "D:\\App\\Game\\War3TrainerV13\\War3Trainer.exe"
-    # p = subprocess.Popen(op_content)
-    # time.sleep(3)
-    # p.terminate()
-    # os.system(f'open \"{op_content}\"')
-    # os.system("osascript -e 'tell application \"/Applications/微信.app\" to quit'")
-    # subprocess.Popen("/Applications/微信.app")
-    # test_sort()
-    # test_mouse()
-    locate_img(20220321000000, "zhongzhi.png")
-    # print(platform.system().lower())
     pass
+    # print(platform.system().lower())
+    # test_mouse()
+    locate_img(20220101000000, "database.png")

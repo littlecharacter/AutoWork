@@ -1,5 +1,6 @@
 import json
 
+DB_PATH = './db/auto_work.db'
 
 WORK_FILENAME = './db/work_item.json'
 FLOW_FILENAME = './db/work_flow.json'
