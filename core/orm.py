@@ -1,10 +1,14 @@
 import json
+from peewee import *
 
 DB_PATH = './db/auto_work.db'
 
 WORK_FILENAME = './db/work_item.json'
 FLOW_FILENAME = './db/work_flow.json'
 MONITOR_FILENAME = './db/work_monitor.json'
+
+# 数据库文件的路径和文件名称
+db = SqliteDatabase(DB_PATH)
 
 
 def get_all_data(filename):
@@ -22,27 +26,33 @@ def get_special_data(wid, filename):
     return None
 
 
-class WorkItem:
-    def __init__(self, wid, name):
-        self.wid = wid
-        self.name = name
+class BaseModel(Model):
+    class Meta:
+        database = db
 
 
-class WorkFlow:
-    def __init__(self, fid, name, order):
-        self.fid = fid
-        self.name = name
-        self.order = order
+class WorkItem(BaseModel):
+    id = BigIntegerField(primary_key=True)
+    name = CharField(max_length=100)
+
+    class Meta:
+        db_table = 'work_item'
 
 
-class WorkMonitor:
-    def __init__(self, mid, name):
-        self.mid = mid
-        self.name = name
+class WorkFlow(BaseModel):
+    id = BigIntegerField()
+    wid = BigIntegerField()
+    name = CharField(max_length=100)
+    order = IntegerField()
 
 
-class WorkOperate:
-    def __init__(self, op_type, op_content, order):
-        self.op_type = op_type
-        self.op_content = op_content
-        self.order = order
+class WorkMonitor(BaseModel):
+    id = BigIntegerField()
+    wid = BigIntegerField()
+    name = CharField(max_length=100)
+
+
+class WorkOperate(BaseModel):
+    op_type = IntegerField()
+    op_content = CharField()
+    order = IntegerField()
