@@ -1,5 +1,6 @@
 import json
 from peewee import *
+import datetime
 
 DB_PATH = './db/auto_work.db'
 
@@ -32,27 +33,37 @@ class BaseModel(Model):
 
 
 class WorkItem(BaseModel):
-    id = BigIntegerField(primary_key=True)
     name = CharField(max_length=100)
+    create_at = DateTimeField(default=datetime.datetime.now())
 
     class Meta:
         db_table = 'work_item'
 
 
 class WorkFlow(BaseModel):
-    id = BigIntegerField()
     wid = BigIntegerField()
     name = CharField(max_length=100)
     order = IntegerField()
+    create_at = DateTimeField(default=datetime.datetime.now())
+
+    class Meta:
+        db_table = 'work_flow'
 
 
 class WorkMonitor(BaseModel):
-    id = BigIntegerField()
     wid = BigIntegerField()
     name = CharField(max_length=100)
+    create_at = DateTimeField(default=datetime.datetime.now())
+
+    class Meta:
+        db_table = 'work_monitor'
 
 
 class WorkOperate(BaseModel):
     op_type = IntegerField()
     op_content = CharField()
     order = IntegerField()
+    create_at = DateTimeField(default=datetime.datetime.now())
+
+    class Meta:
+        db_table = 'work_operate'
