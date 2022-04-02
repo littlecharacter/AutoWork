@@ -22,12 +22,10 @@ def get_special_data(wid, filename):
     return None
 
 
-class Work:
+class WorkItem:
     def __init__(self, wid, name):
         self.wid = wid
         self.name = name
-        self.flow: WorkFlow
-        self.monitor: WorkMonitor
 
 
 class WorkFlow:
@@ -35,17 +33,15 @@ class WorkFlow:
         self.fid = fid
         self.name = name
         self.order = order
-        self.operate: Operate
 
 
 class WorkMonitor:
     def __init__(self, mid, name):
         self.mid = mid
         self.name = name
-        self.operate: Operate
 
 
-class Operate:
+class WorkOperate:
     def __init__(self, op_type, op_content, order):
         self.op_type = op_type
         self.op_content = op_content
