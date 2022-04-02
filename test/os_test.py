@@ -15,7 +15,5 @@ if __name__ == "__main__":
 
     for pid in psutil.pids():
         p = psutil.Process(pid)
-        print(p.name())
         if p.name() == 'War3.exe':
-            print(p.name())
             p.terminate()
