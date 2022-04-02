@@ -29,7 +29,6 @@ class WorkOperate(BaseModel):
 def test_insert_record():
     WorkItem.create_table()
     work_item = WorkItem()
-
     # work_item.id = 2
     work_item.name = '人族无敌'
     work_item.save()
@@ -37,6 +36,7 @@ def test_insert_record():
 
 
 def test_select_record():
+    WorkItem.create_table()
     works = WorkItem.select()
     for work in works:
         work.work_operate.append(WorkOperate(op_type=1, op_content='123', order=2))
@@ -47,6 +47,7 @@ def test_select_record():
 
 
 def test_update_record():
+    WorkItem.create_table()
     works = WorkItem.select()
     for work in works:
         if work.id == 2:
@@ -56,6 +57,7 @@ def test_update_record():
 
 
 def test_delete_record():
+    WorkItem.create_table()
     # 删除姓名为perter的数据
     WorkItem.delete().where(WorkItem.id > 3).execute()
 
