@@ -12,8 +12,6 @@ import pyscreeze
 import subprocess
 import platform
 
-import random
-
 pyautogui.FAILSAFE = False
 
 run_flag = Queue(1)
@@ -61,62 +59,71 @@ class WorkThread(threading.Thread):
 
 @unique
 class OperateTypeEnum(Enum):
-    LEFT_CLICK = 1
-    RIGHT_CLICK = 2
-    DOUBLE_CLICK = 3
-    KEY_PRESS = 4
-    DOUBLE_KEY_PRESS = 5
-    INPUT = 6
-    OPEN_APP = 7
-    LOCATE_IMG = 8
-    KEY_MAP = 9
-    SCHEDULE = 10
+    LEFT_CLICK = {'code': 1, 'desc': '单击'}
+    DOUBLE_CLICK = {'code': 2, 'desc': '双击'}
+    RIGHT_CLICK = {'code': 3, 'desc': '右击'}
+    LEFT_CLICK_IMG = {'code': 4, 'desc': '单击图片'}
+    DOUBLE_CLICK_IMG = {'code': 5, 'desc': '双击图片'}
+    KEY_PRESS = {'code': 6, 'desc': '按键'}
+    HOT_KEY = {'code': 7, 'desc': '热键'}
+    KEY_MAP = {'code': 8, 'desc': '快捷键'}
+    INPUT = {'code': 9, 'desc': '输入'}
+    OPEN_APP = {'code': 10, 'desc': '打开APP'}
+
+    @staticmethod
+    def get_enum(code):
+        for e in OperateTypeEnum:
+            if code == e.value['code']:
+                return e
+
+    def code(self):
+        return self.value['code']
+
+    def desc(self):
+        return self.value['desc']
 
 
 def execute(self, op_type, op_content):
     print(op_content)
-    if op_type == OperateTypeEnum.LEFT_CLICK.value:
+    op_type_enum = OperateTypeEnum.get_enum(op_type)
+    # 1-单击
+    if op_type_enum == OperateTypeEnum.LEFT_CLICK:
         position = op_content.split(",")
         x, y = pyautogui.position()
         pyautogui.moveTo(x=x+int(position[0]), y=y+int(position[1]), duration=0.25)
         pyautogui.click()
         return True
-    elif op_type == OperateTypeEnum.RIGHT_CLICK.value:
-        position = op_content.split(",")
-        x, y = pyautogui.position()
-        pyautogui.moveTo(x=x + int(position[0]), y=y + int(position[1]), duration=0.25)
-        pyautogui.rightClick()
-        return True
-    elif op_type == OperateTypeEnum.DOUBLE_CLICK.value:
+    # 2-双击
+    elif op_type_enum == OperateTypeEnum.DOUBLE_CLICK:
         position = op_content.split(",")
         x, y = pyautogui.position()
         pyautogui.moveTo(x=x + int(position[0]), y=y + int(position[1]), duration=0.25)
         pyautogui.doubleClick()
         return True
-    elif op_type == OperateTypeEnum.KEY_PRESS.value:
+    # 3-右击
+    elif op_type_enum == OperateTypeEnum.RIGHT_CLICK:
+        position = op_content.split(",")
+        x, y = pyautogui.position()
+        pyautogui.moveTo(x=x + int(position[0]), y=y + int(position[1]), duration=0.25)
+        pyautogui.rightClick()
+        return True
+    # 4-单击图片
+    elif op_type_enum == OperateTypeEnum.LEFT_CLICK_IMG:
+        return click_img(self.wid, op_content, 1)
+    # 5-单击图片
+    elif op_type_enum == OperateTypeEnum.DOUBLE_CLICK_IMG:
+        return click_img(self.wid, op_content, 2)
+    # 6-按键
+    elif op_type_enum == OperateTypeEnum.KEY_PRESS:
         pyautogui.press(op_content)
         return True
-    elif op_type == OperateTypeEnum.DOUBLE_KEY_PRESS.value:
+    # 7-热键
+    elif op_type_enum == OperateTypeEnum.HOT_KEY:
         keys = op_content.split(",")
         pyautogui.hotkey(keys[0], keys[1])
         return True
-    elif op_type == OperateTypeEnum.INPUT.value:
-        pyperclip.copy(op_content)
-        time.sleep(0.5)
-        if platform.system().lower() == 'windows':
-            pyautogui.hotkey('ctrl', 'v')
-        else:
-            pyautogui.hotkey('command', 'v')
-        return True
-    elif op_type == OperateTypeEnum.OPEN_APP.value:
-        if platform.system().lower() == 'windows':
-            subprocess.Popen(op_content)
-        else:
-            os.system(f'open \"{op_content}\"')
-        return True
-    elif op_type == OperateTypeEnum.LOCATE_IMG.value:
-        return locate_img(self.wid, op_content)
-    elif op_type == OperateTypeEnum.KEY_MAP.value:
+    # 8-快捷键
+    elif op_type_enum == OperateTypeEnum.KEY_MAP:
         keys = op_content.split("+")
         for key in keys[0:-1]:
             pyautogui.keyDown(key)
@@ -125,13 +132,26 @@ def execute(self, op_type, op_content):
         for key in keys[1:]:
             pyautogui.keyUp(key)
         return True
-    elif op_type == OperateTypeEnum.SCHEDULE.value:
-        time.sleep(int(op_content))
+    # 9-输入
+    elif op_type_enum == OperateTypeEnum.INPUT:
+        pyperclip.copy(op_content)
+        time.sleep(0.5)
+        if platform.system().lower() == 'windows':
+            pyautogui.hotkey('ctrl', 'v')
+        else:
+            pyautogui.hotkey('command', 'v')
+        return True
+    # 10-打开APP
+    elif op_type_enum == OperateTypeEnum.OPEN_APP:
+        if platform.system().lower() == 'windows':
+            subprocess.Popen(op_content)
+        else:
+            os.system(f'open \"{op_content}\"')
         return True
     return False
 
 
-def locate_img(wid, op_content):
+def click_img(wid, op_content, click_num):
     # 屏幕缩放系数 mac缩放是2 windows一般是1
     screenScale = pyautogui.screenshot().size[0] / pyautogui.size()[0]
     # print(pyautogui.size())
@@ -163,9 +183,12 @@ def locate_img(wid, op_content):
         tagCenterY = maxLoc[1] / screenScale + tagHalfH
         # 左键点击屏幕上的这个位置
         print(f"tagCenterX:{tagCenterX},tagCenterY:{tagCenterY}")
-        pyautogui.moveTo(x=tagCenterX, y=tagCenterY, duration=0.25)
-        pyautogui.click()
         # pyautogui.click(tagCenterX, tagCenterY, button='left')
+        pyautogui.moveTo(x=tagCenterX, y=tagCenterY, duration=0.25)
+        if click_num == 1:
+            pyautogui.click()
+        elif click_num == 2:
+            pyautogui.doubleClick()
         return True
     print(f"没有匹配到{op_content}")
     return False

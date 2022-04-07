@@ -12,6 +12,11 @@ MONITOR_FILENAME = './db/work_monitor.json'
 db = SqliteDatabase(DB_PATH)
 
 
+def get_work_items():
+    WorkItem.create_table()
+    return list(WorkItem.select().order_by(WorkItem.id.asc()))
+
+
 def get_all_data(filename):
     with open(filename, encoding="utf-8") as f:
         data = json.load(f, encoding="utf-8")

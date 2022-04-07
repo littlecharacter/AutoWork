@@ -1,3 +1,6 @@
+from core.execute import OperateTypeEnum
+
+
 def test_sort():
     source = [{'name': 'Homer', 'age': 39}, {'name': 'Bart', 'age': 10}]
     print(source)
@@ -5,6 +8,12 @@ def test_sort():
     print(source)
 
 
+def test_enum():
+    e = OperateTypeEnum.get_enum(1)
+    print(e == OperateTypeEnum.LEFT_CLICK)
+
+
 if __name__ == "__main__":
     pass
-    test_sort()
+    # test_sort()
+    test_enum()

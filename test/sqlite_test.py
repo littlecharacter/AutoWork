@@ -38,7 +38,10 @@ def test_insert_record():
 
 def test_select_record():
     WorkItem.create_table()
-    works = WorkItem.select()
+    works = list(WorkItem.select().order_by(WorkItem.id.desc()))
+    print(works)
+    for work in works:
+        print(work.name)
     for work in works:
         work.work_operate.append(WorkOperate(op_type=1, op_content='123', order=2))
         print(work.name)
