@@ -2,7 +2,6 @@ import os
 import time
 import copy
 import threading
-from enum import Enum, unique
 from queue import Queue
 from core.orm import *
 import cv2

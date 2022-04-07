@@ -1,5 +1,3 @@
-import datetime
-import platform
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -70,13 +68,14 @@ class MainFrame:
         for item in x:
             self.tv.delete(item)
         # 再插入数据
-        work_list = get_all_data(WORK_FILENAME)
-        if work_list:
-            for work_dict in work_list:
-                if run_flag.full() and work_dict.get('wid') == run_work.get('wid'):
-                    self.tv.insert('', 'end', values=(work_dict.get('name'), "运行"), iid=work_dict.get('wid'))
+        # work_list = get_all_data(WORK_FILENAME)
+        work_items = select_work_items()
+        if work_items:
+            for work_item in work_items:
+                if run_flag.full() and work_item.id == run_work.get('wid'):
+                    self.tv.insert('', 'end', values=(work_item.name, "运行"), iid=work_item.id)
                 else:
-                    self.tv.insert('', 'end', values=(work_dict.get('name'), "停止"), iid=work_dict.get('wid'))
+                    self.tv.insert('', 'end', values=(work_item.name, "停止"), iid=work_item.id)
 
     def add_work(self):
         self.frame_top.destroy()

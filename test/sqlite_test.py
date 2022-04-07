@@ -3,6 +3,7 @@
 import sqlite3
 import peewee
 import datetime
+import core.orm as orm
 
 db = peewee.SqliteDatabase('../db/auto_work.db')
 
@@ -41,12 +42,15 @@ def test_select_record():
     works = list(WorkItem.select().order_by(WorkItem.id.desc()))
     print(works)
     for work in works:
-        print(work.name)
+        print(f"id={work.id},name={work.name},time={work.create_at}")
     for work in works:
         work.work_operate.append(WorkOperate(op_type=1, op_content='123', order=2))
         print(work.name)
         for operate in work.work_operate:
             print(operate.op_content)
+    work_items = list(WorkItem.select().where(WorkItem.name == '人族无敌').order_by(WorkItem.id.desc()))
+    for work_item in work_items:
+        print(f"id={work_item.id},name={work_item.name}")
     pass
 
 
@@ -73,7 +77,32 @@ def test_delete_record():
 
 if __name__ == "__main__":
     pass
+
     # test_insert_record()
-    test_select_record()
+    # test_select_record()
     # test_update_record()
     # test_delete_record()
+
+    # 新增工作项
+    # work_item = orm.WorkItem(name='自动发送消息')
+    # orm.insert_work_item(work_item)
+    # 新增工作流程
+    # work_flow = orm.WorkFlow(wid=1, name='按回车发消息', order=6)
+    # orm.insert_work_flow(work_flow)
+    # 查询工作流程
+    # orm.select_work_flows(1)
+    # 查询工作监控
+    # orm.select_work_monitors(1)
+    # 新增工作操作
+    work_operate = orm.WorkOperate(fm_id=1, fm_type=1, op_type=10, op_content='/Applications/微信.app', order=1)
+    orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=2, fm_type=1, op_type=4, op_content='1-sousuolianxiren.png', order=1)
+    orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=3, fm_type=1, op_type=9, op_content='尜尜人物', order=1)
+    orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=4, fm_type=1, op_type=6, op_content='enter', order=1)
+    orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=5, fm_type=1, op_type=9, op_content='HelloWorld', order=1)
+    orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=6, fm_type=1, op_type=6, op_content='enter', order=1)
+    orm.insert_work_operate(work_operate)
