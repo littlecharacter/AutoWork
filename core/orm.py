@@ -33,7 +33,7 @@ class BaseModel(Model):
 
 
 class WorkItem(BaseModel):
-    name = CharField(max_length=100)
+    name = CharField()
     create_at = DateTimeField(default=datetime.datetime.now())
 
     class Meta:
@@ -42,24 +42,38 @@ class WorkItem(BaseModel):
 
 class WorkFlow(BaseModel):
     wid = BigIntegerField()
-    name = CharField(max_length=100)
+    name = CharField()
     order = IntegerField()
     create_at = DateTimeField(default=datetime.datetime.now())
 
     class Meta:
         db_table = 'work_flow'
+        indexes = (
+            (('wid', 'order'), True),
+        )
+
+
+class WorkFlowBO:
+    work_flow = None
+    work_operate = []
 
 
 class WorkMonitor(BaseModel):
     wid = BigIntegerField()
-    name = CharField(max_length=100)
+    name = CharField()
     create_at = DateTimeField(default=datetime.datetime.now())
 
     class Meta:
         db_table = 'work_monitor'
 
 
+class WorkMonitorBO:
+    work_monitor = None
+    work_operate = []
+
+
 class WorkOperate(BaseModel):
+    fmid = BigIntegerField()
     op_type = IntegerField()
     op_content = CharField()
     order = IntegerField()
@@ -67,3 +81,6 @@ class WorkOperate(BaseModel):
 
     class Meta:
         db_table = 'work_operate'
+        indexes = (
+            (('fmid', 'order'), True),
+        )
