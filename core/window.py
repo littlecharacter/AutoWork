@@ -203,11 +203,11 @@ class BuildFrame:
         for item in x:
             self.flow_tv.delete(item)
         # 再插入数据
-        flow_dict = get_special_data(self.wid, FLOW_FILENAME)
-        if flow_dict:
-            flow_item_list = flow_dict.get('flow')
-            for flow_item_dict in flow_item_list:
-                self.flow_tv.insert('', 'end', values=(f"第{flow_item_dict.get('fid') + 1}步", flow_item_dict.get('name')), iid=flow_item_dict.get('fid'))
+        # flow_dict = get_special_data(self.wid, FLOW_FILENAME)
+        work_flow_bos = select_work_flows(self.wid)
+        if work_flow_bos:
+            for work_flow_bo in work_flow_bos:
+                self.flow_tv.insert('', 'end', values=(f"第{work_flow_bo.work_flow.order}步", work_flow_bo.work_flow.name), iid=work_flow_bo.work_flow.id)
 
     def show_monitor(self):
         # 先清空数据
@@ -215,11 +215,11 @@ class BuildFrame:
         for item in x:
             self.monitor_tv.delete(item)
         # 再插入数据
-        monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
-        if monitor_dict:
-            monitor_item_list = monitor_dict.get('monitor')
-            for monitor_item_dict in monitor_item_list:
-                self.monitor_tv.insert('', 'end', values=(monitor_item_dict.get('name')), iid=monitor_item_dict.get('mid'))
+        # monitor_dict = get_special_data(self.wid, MONITOR_FILENAME)
+        work_monitor_bos = select_work_monitors(self.wid)
+        if work_monitor_bos:
+            for work_monitor_bo in work_monitor_bos:
+                self.monitor_tv.insert('', 'end', values=(work_monitor_bo.work_monitor.name,), iid=work_monitor_bo.work_monitor.id)
 
     def show_flow_item(self):
         item = self.flow_tv.selection()

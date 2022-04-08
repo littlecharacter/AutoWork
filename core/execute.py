@@ -13,6 +13,8 @@ import platform
 
 pyautogui.FAILSAFE = False
 
+IMG_PATH = '../img/'
+
 run_flag = Queue(1)
 run_work = {}
 stop_signal = Queue(1)
@@ -151,20 +153,28 @@ def execute(self, op_type, op_content):
 
 
 def click_img(wid, op_content, click_num):
+    # 初始化目录
+    if not os.path.exists(IMG_PATH):
+        os.makedirs(IMG_PATH)
+    if not os.path.exists(f"{IMG_PATH}/{wid}/"):
+        os.makedirs(f"{IMG_PATH}/{wid}/")
     # 屏幕缩放系数 mac缩放是2 windows一般是1
     screenScale = pyautogui.screenshot().size[0] / pyautogui.size()[0]
     # print(pyautogui.size())
     # print(f"屏幕缩放系数：{screenScale}")
 
     # 事先读取按钮截图
-    img_path = f"./img/{wid}/{op_content}"
+    img_path = f"{IMG_PATH}/{wid}/{op_content}"
     target = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    if target is None:
+        print("未找到目标图片")
+        return
     targetHeight, targetWidth = target.shape[:2]
 
     # 先截图
-    screenshot = pyscreeze.screenshot('./img/screenshot.png')
+    screenshot = pyscreeze.screenshot(f"{IMG_PATH}/screenshot.png")
     # 读取图片 灰色会快
-    source = cv2.imread(r'./img/screenshot.png', cv2.IMREAD_GRAYSCALE)
+    source = cv2.imread(f"{IMG_PATH}/screenshot.png", cv2.IMREAD_GRAYSCALE)
     # sourceHeight, sourceWidth = source.shape[:2]
     # 先缩放屏幕截图(本程序中无需缩放，因为截图就是原图)
     # sourceScale = cv2.resize(source, (int(sourceWidth / screenScale), int(sourceHeight / screenScale)), interpolation=cv2.INTER_AREA)
