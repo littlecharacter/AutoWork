@@ -1,9 +1,12 @@
+import os
 import cv2
 import pyautogui
 import pyscreeze
 
-
 pyautogui.FAILSAFE = False
+
+
+IMG_PATH = '../img/'
 
 
 def test_mouse():
@@ -28,9 +31,11 @@ def locate_img(wid, op_content):
         targetHeight, targetWidth = target.shape[:2]
 
         # 先截图
-        screenshot = pyscreeze.screenshot('../img/screenshot.png')
+        if not os.path.exists(IMG_PATH):
+            os.makedirs(IMG_PATH)
+        screenshot = pyscreeze.screenshot(f"{IMG_PATH}/screenshot.png")
         # 读取图片 灰色会快
-        source = cv2.imread(r'../img/screenshot.png', cv2.IMREAD_GRAYSCALE)
+        source = cv2.imread(f"{IMG_PATH}/screenshot.png", cv2.IMREAD_GRAYSCALE)
         # sourceHeight, sourceWidth = source.shape[:2]
         # 先缩放屏幕截图(本程序中无需缩放，因为截图就是原图)
         # sourceScale = cv2.resize(source, (int(sourceWidth / screenScale), int(sourceHeight / screenScale)), interpolation=cv2.INTER_AREA)

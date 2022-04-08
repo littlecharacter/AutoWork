@@ -94,15 +94,7 @@ if __name__ == "__main__":
     # 查询工作监控
     # orm.select_work_monitors(1)
     # 新增工作操作
-    work_operate = orm.WorkOperate(fm_id=1, fm_type=1, op_type=10, op_content='/Applications/微信.app', order=1)
-    orm.insert_work_operate(work_operate)
-    work_operate = orm.WorkOperate(fm_id=2, fm_type=1, op_type=4, op_content='1-sousuolianxiren.png', order=1)
-    orm.insert_work_operate(work_operate)
-    work_operate = orm.WorkOperate(fm_id=3, fm_type=1, op_type=9, op_content='尜尜人物', order=1)
-    orm.insert_work_operate(work_operate)
-    work_operate = orm.WorkOperate(fm_id=4, fm_type=1, op_type=6, op_content='enter', order=1)
-    orm.insert_work_operate(work_operate)
-    work_operate = orm.WorkOperate(fm_id=5, fm_type=1, op_type=9, op_content='HelloWorld', order=1)
-    orm.insert_work_operate(work_operate)
-    work_operate = orm.WorkOperate(fm_id=6, fm_type=1, op_type=6, op_content='enter', order=1)
+    # work_operate = orm.WorkOperate(fm_id=1, fm_type=1, op_type=10, op_content='/Applications/微信.app', order=1)
+    # orm.insert_work_operate(work_operate)
+    work_operate = orm.WorkOperate(fm_id=7, fm_type=1, op_type=10, op_content='/Applications/微信.app', order=1)
     orm.insert_work_operate(work_operate)

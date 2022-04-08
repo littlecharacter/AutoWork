@@ -1,15 +1,23 @@
+import os
 import json
 from peewee import *
 import datetime
 from enum import Enum, unique
 
-DB_PATH = './db/auto_work.db'
+DB_PATH = '../db/'
 
-FLOW_FILENAME = './db/work_flow.json'
-MONITOR_FILENAME = './db/work_monitor.json'
+FLOW_FILENAME = '../db/work_flow.json'
+MONITOR_FILENAME = '../db/work_monitor.json'
 
-# 数据库文件的路径和文件名称
-db = SqliteDatabase(DB_PATH)
+
+def getDatabase():
+    if not os.path.exists(DB_PATH):
+        os.makedirs(DB_PATH)
+    return SqliteDatabase(f"{DB_PATH}/auto_work.db")
+
+
+# 获得数据库实例
+db = getDatabase()
 
 
 # 操作工作项
@@ -109,7 +117,8 @@ def delete_work_operate(work_operate):
 
 def select_work_operates(fm_id, fm_type):
     WorkOperate.create_table()
-    return list(WorkOperate.select().where((WorkOperate.fm_id == fm_id) & (WorkOperate.fm_type == fm_type)).order_by(WorkOperate.order.asc()))
+    return list(WorkOperate.select().where((WorkOperate.fm_id == fm_id) & (WorkOperate.fm_type == fm_type)).order_by(
+        WorkOperate.order.asc()))
 
 
 # 一开始的写法
