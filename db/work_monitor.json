@@ -1,0 +1,13 @@
+[
+  {
+    "wid": 20220101000000,
+    "monitor": [
+      {
+        "mid": 0,
+        "name": "崩溃确认",
+        "op_type": 8,
+        "op_content": "bengkuiqueren.png"
+      }
+    ]
+  }
+]
